@@ -39,7 +39,7 @@ app.get('/articles', (request, response) => {
 app.post('/articles', (request, response) => {
   //TODO: fill in SQL for app.post request/response
   client.query(
-    'INSERT INTO authors SET author = $1, "authorUrl" = $2 ON CONFLICT DO NOTHING;',
+    'INSERT INTO authors (author, "authorUrl") VALUES ($1,$2) ON CONFLICT DO NOTHING;',
     [
       request.body.author,
       request.body.authorUrl
@@ -55,7 +55,9 @@ app.post('/articles', (request, response) => {
     //DONE: write SQL for queryTwo, retrieve author
     client.query(
       `SELECT author_id FROM authors WHERE author = $1;`,
-      [request.body.author],
+      [
+        request.body.author
+      ],
       function(err, result) {
         if (err) console.error(err);
 
@@ -66,10 +68,17 @@ app.post('/articles', (request, response) => {
   }
 
   function queryThree(author_id) {
-    //TODO: fill in SQL for queryThree
+    //DONE: fill in SQL for queryThree to populate new article into article database in the model
     client.query(
-      ``,
-      [],
+      `INSERT INTO
+      articles (title, category, "publishedOn", body, author_id) VALUES ($1, $2, $3, $4, $5);`,
+      [
+        request.body.title,
+        request.body.category,
+        request.body.publishedOn,
+        request.body.body,
+        author_id
+      ],
       function(err) {
         if (err) console.error(err);
         response.send('insert complete');
@@ -79,16 +88,27 @@ app.post('/articles', (request, response) => {
 });
 
 app.put('/articles/:id', function(request, response) {
-  //TODO: Fill in SQL for app.put request
+  //DONE: Updating authors table
   client.query(
-    ``,
-    []
+    `SELECT author_id FROM articles WHERE article_id =$1
+    UPDATE authors SET (author=$2, authorUrl=$3) WHERE authors.author_id = articles.author_id;`,
+    [
+      request.params.id,
+      request.body.author,
+      request.body.authorUrl
+    ]
   )
     .then(() => {
       //TODO: Fill in SQL for second stage of app.put
       client.query(
-        ``,
-        []
+        `UPDATE articles SET title=$1, category=$2, "publishedOn"=$3, body=$4 WHERE article_id=$5;`)
+        [
+          request.body.title,
+          request.body.category,
+          request.body.publishedOn,
+          request.body.body,
+          request.params.id
+        ]
       );
     })
     .then(() => {
