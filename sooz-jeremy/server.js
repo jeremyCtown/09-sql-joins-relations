@@ -98,7 +98,7 @@ app.put('/articles/:id', function(request, response) {
     ]
   )
     .then(() => {
-      //TODO: Fill in SQL for second stage of app.put
+      //DONE: Fill in SQL for second stage of app.put
       client.query(
         `UPDATE articles SET title=$1, category=$2, "publishedOn"=$3, body=$4 WHERE article_id=$5;`,
         [
