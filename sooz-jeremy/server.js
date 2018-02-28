@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-//TODO: insert conString from yesterday
+//DONE: insert conString from yesterday
 const conString = 'postgres://localhost:5432/kilovolt';
 const client = new pg.Client(conString);
 client.connect();
